@@ -60,6 +60,16 @@ function g {
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
     if [ -d "$target" ]; then
         cd "$target"
+        if [ -d "$target/.venv" ]; then
+            export PROJECT_DIR=$target
+            export ENV_NAME=$1
+            # Manual environment activation (no sub-shell like with pipenv shell)
+            . `pipenv --venv`/bin/activate
+            # Run our postactivation hook to setup things up as we want
+            if [ -f "$HOME/.postactivate" ]; then
+                . "$HOME/.postactivate"
+            fi
+        fi
     elif [ ! -n "$target" ]; then
         echo -e "\033[${RED}WARNING: '${1}' bashmark does not exist\033[00m"
     else
