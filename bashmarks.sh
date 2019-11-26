@@ -63,8 +63,12 @@ function g {
         if [ -d "$target/.venv" ]; then
             export PROJECT_DIR=$target
             export ENV_NAME=$1
-            # Manual environment activation (no sub-shell like with pipenv shell)
-            . `pipenv --venv`/bin/activate
+            . .venv/bin/activate
+            if [ -f "$target/.env" ]; then
+                set -a
+                . "$target/.env"
+                set +a
+            fi
             # Run our postactivation hook to setup things up as we want
             if [ -f "$HOME/.postactivate" ]; then
                 . "$HOME/.postactivate"
