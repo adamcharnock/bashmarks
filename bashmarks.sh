@@ -60,10 +60,15 @@ function g {
     target="$(eval $(echo echo $(echo \$DIR_$1)))"
     if [ -d "$target" ]; then
         cd "$target"
-        if [ -d "$target/.venv" ]; then
+        if [ -f "$target/pyproject.toml" ] && [ ! -f "$target/Pipfile" ]; then
+            ENV_DIR=$(poetry env info -p 2> /dev/null)
+        elif [ -d "$target/.venv" ]; then
+            ENV_DIR="$target/.venv"
+        fi
+        if [ -d "$ENV_DIR" ]; then
             export PROJECT_DIR=$target
             export ENV_NAME=$1
-            . .venv/bin/activate
+            . $ENV_DIR/bin/activate
             if [ -f "$target/.env" ]; then
                 set -a
                 . "$target/.env"
